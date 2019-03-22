@@ -1,0 +1,19 @@
+{
+  "presets": [
+    [
+      "env",
+      {
+        "targets": {
+          "node": "current"
+        }
+      }
+    ]
+  ],
+  "plugins": [
+    "import-glob",
+    "transform-decorators-legacy",
+    "transform-class-properties"
+  ],
+  "sourceMaps": "inline",
+  "retainLines": true
+}
