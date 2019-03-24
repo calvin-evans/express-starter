@@ -1,4 +1,5 @@
-# Express Starter
+# Express Starter  [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com) ![Dependencies](https://david-dm.org/calvin-evans/express-starter.svg) [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/RocketChat/Rocket.Chat/raw/master/LICENSE)
+
 
 There are probably hundres of Express boilerplates - but this one is mine :smirk:
 
