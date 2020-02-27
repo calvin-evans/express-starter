@@ -38,7 +38,7 @@ passport.use('register', new LocalStrat(
       const newUser = new User({ email, password })
       await newUser.save()
       debug(`New user registered`)
-      return done(null, user)
+      return done(null, newUser)
     } catch (err) {
       error(err)
     }
