@@ -1,4 +1,4 @@
-import Acl from 'acl'
+import Acl from 'kiot-acl'
 import logger from './logger'
 import User from '../models/User'
 
