@@ -10,7 +10,7 @@ export default async() => {
     {
       firstName: 'Betty',
       lastName: 'TheAdmin',
-      email: 'calvin@webantic.co.uk',
+      email: 'ceuk.dev@gmail.com',
       password: 'abcd1234',
       role: 'admin'
     }
