@@ -6,7 +6,7 @@ const debug = logger('acl', 'debug')
 
 export default async connection => {
   /* eslint-disable-next-line */
-  const acl = new Acl(new Acl.mongodbBackend(connection.db))
+  const acl = new Acl(new Acl.mongodbBackend(connection.db, 'acl_'))
   acl.allow([
     {
       roles: ['user', 'admin'],
@@ -27,7 +27,7 @@ export default async connection => {
       const users = await User.find().exec()
       await Promise.all(users.map(user => {
         debug(`Assigning ${user.role} role to ${user.firstName} ${user.lastName} - ID: ${user._id.toString()}`)
-        return acl.addUserRoles(user._id.toString(), user.role || 'interpreter')
+        return acl.addUserRoles(user._id.toString(), user.role || 'user')
       }))
     } catch (err) {
       throw err
