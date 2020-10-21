@@ -6,6 +6,15 @@ import logger from '../services/logger'
 
 const error = logger('controllers:user', 'error')
 
+const exampleUser: Partial<User> = {
+  id: '123456-123456-123456-123456',
+  firstName: 'Frank',
+  lastName: 'Sinatra',
+  email: 'frank@sinatra.com',
+  createdAt: new Date('2020-10-21T09:01:20.040Z'),
+  updatedAt: new Date('2020-10-21T09:01:20.040Z')
+}
+
 @Path('/user')
 export class UserController {
 
@@ -14,16 +23,9 @@ export class UserController {
   @Security()
   @Response(200, 'The user object')
   @Response(401, 'Error. Unauthorized')
-  @Example({
-    id: '123456-123456-123456-123456',
-    firstName: 'Frank',
-    lastName: 'Sinatra',
-    email: 'frank@sinatra.com',
-    createdAt: '2020-10-21T09:01:20.040Z',
-    updatedAt: '2020-10-21T09:01:20.040Z'
-  })
-  getSelf (@Context context: ServiceContext): Express.User | object {
-    return context.request.user || {}
+  @Example(exampleUser)
+  getSelf (@Context context: ServiceContext): Express.User | null {
+    return context.request.user || null
   }
 
   @GET

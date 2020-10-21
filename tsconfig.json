@@ -19,6 +19,7 @@
     "baseUrl": ".",
     "strict": true,
     "skipLibCheck": true,
+    "strictNullChecks": false,
     "paths": {
       "*": [
         "node_modules/*"
