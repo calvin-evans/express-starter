@@ -1,0 +1,15 @@
+swagger:
+  outputDirectory: ./api-docs
+  entryFile:
+    - ./src/controllers/*
+  outputFormat: OpenApi_3
+  name: Express Starter
+  description: Example API
+  produces: [application/json]
+  version: 0.0.1
+  securityDefinitions:
+    default:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      name: JWT Authentication

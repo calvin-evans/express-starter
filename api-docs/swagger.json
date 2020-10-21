@@ -1,0 +1,134 @@
+{
+	"openapi": "3.0.0",
+	"info": {
+		"description": "Example API",
+		"license": {
+			"name": "MIT"
+		},
+		"title": "Express Starter",
+		"version": "0.0.1"
+	},
+	"paths": {
+		"/auth/login": {
+			"post": {
+				"operationId": "AuthLoginSuccessful",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"description": ""
+			}
+		},
+		"/auth/register": {
+			"post": {
+				"operationId": "AuthRegistrationSuccessful",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"description": "",
+				"security": [
+					{
+						"default": []
+					}
+				]
+			}
+		},
+		"/user/me": {
+			"get": {
+				"operationId": "UserGetSelf",
+				"responses": {
+					"200": {
+						"description": "The user object",
+						"content": {
+							"application/json": {
+								"examples": {
+									"response": {
+										"value": {
+											"id": "123456-123456-123456-123456",
+											"firstName": "Frank",
+											"lastName": "Sinatra",
+											"email": "frank@sinatra.com",
+											"createdAt": "2020-10-21T09:01:20.040Z",
+											"updatedAt": "2020-10-21T09:01:20.040Z"
+										}
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Error. Unauthorized"
+					}
+				},
+				"description": "",
+				"security": [
+					{
+						"default": []
+					}
+				]
+			}
+		},
+		"/user/validateToken": {
+			"get": {
+				"operationId": "UserValidateToken",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"description": "",
+				"security": [
+					{
+						"default": []
+					}
+				]
+			}
+		},
+		"/user": {
+			"post": {
+				"operationId": "UserInsertUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"description": "",
+				"security": [
+					{
+						"default": []
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object"
+							}
+						}
+					},
+					"required": true
+				}
+			}
+		}
+	},
+	"components": {
+		"securitySchemes": {
+			"default": {
+				"type": "http",
+				"scheme": "bearer",
+				"bearerFormat": "JWT",
+				"name": "JWT Authentication"
+			}
+		}
+	}
+}

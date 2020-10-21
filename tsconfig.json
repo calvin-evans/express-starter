@@ -1,7 +1,31 @@
 {
+  "compileOnSave": true,
   "compilerOptions": {
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/types"
+    ],
+    "declaration": false,
+    "strictPropertyInitialization": false,
+    "module": "commonjs",
     "experimentalDecorators": true,
-    "allowJs": true,
-    "esModuleInterop": true
-  }
+    "emitDecoratorMetadata": true,
+    "esModuleInterop": true,
+    "target": "es6",
+    "noImplicitAny": false,
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "outDir": "build",
+    "baseUrl": ".",
+    "strict": true,
+    "skipLibCheck": true,
+    "paths": {
+      "*": [
+        "node_modules/*"
+      ]
+    }
+  },
+  "include": [
+    "src/**/*.ts"
+  ]
 }

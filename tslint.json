@@ -1,0 +1,23 @@
+{
+  "defaultSeverity": "error",
+  "extends": [
+    "tslint:recommended",
+    "tslint-config-standard"
+  ],
+  "jsRules": {},
+  "rules": {
+    "await-promise": [
+      false
+    ],
+    "member-access": [
+      false
+    ],
+    "object-literal-sort-keys": [
+      false
+    ],
+    "trailing-comma": [
+      false
+    ]
+  },
+  "rulesDirectory": []
+}

@@ -1,17 +1,18 @@
-import './loadenv'
-import 'reflect-metadata'
 import http from 'http'
-import app from './app'
+import 'reflect-metadata'
+import { init } from './app'
+import './loadenv'
 import logger from './services/logger'
 
-const debug = logger('server', 'debug')
+const info = logger('server', 'info')
+const error = logger('server', 'error')
 
-app.init().then(app => {
+init().then((app) => {
   /**
    * Get port from environment and store in Express.
    */
 
-  const port = normalizePort(process.env.PORT || '3005')
+  const port = normalizePort(process.env.PORT || 3005)
   app.set('port', port)
 
   /**
@@ -32,17 +33,17 @@ app.init().then(app => {
    * Normalize a port into a number, string, or false.
    */
 
-  function normalizePort(val) {
-    const port = parseInt(val, 10)
+  function normalizePort (val: any) {
+    const normalisedPort = parseInt(val, 10)
 
-    if (isNaN(port)) {
+    if (isNaN(normalisedPort)) {
       // named pipe
       return val
     }
 
-    if (port >= 0) {
+    if (normalisedPort >= 0) {
       // port number
-      return port
+      return normalisedPort
     }
 
     return false
@@ -52,8 +53,8 @@ app.init().then(app => {
    * Event listener for HTTP server "error" event.
    */
 
-  function onError(error) {
-    if (error.syscall !== 'listen') {
+  function onError (err: NodeJS.ErrnoException) {
+    if (err.syscall !== 'listen') {
       throw error
     }
 
@@ -62,19 +63,17 @@ app.init().then(app => {
       : `Port ${port}`
 
     // handle specific listen errors with friendly messages
-    switch (error.code) {
-    case 'EACCES':
-      /* eslint-disable */
-        console.error(`${bind} requires elevated privileges`)
-        /* eslint-enable */
-      process.exit(1)
-    case 'EADDRINUSE':
-      /* eslint-disable */
-        console.error(`${bind} is already in use`)
-        /* eslint-enable */
-      process.exit(1)
-    default:
-      throw error
+    switch (err.code) {
+      case 'EACCES':
+        error(`${bind} requires elevated privileges`)
+        process.exit(1)
+      // tslint:disable-next-line:no-switch-case-fall-through
+      case 'EADDRINUSE':
+        error(`${bind} is already in use`)
+        process.exit(1)
+      // tslint:disable-next-line:no-switch-case-fall-through
+      default:
+        throw error
     }
   }
 
@@ -82,14 +81,14 @@ app.init().then(app => {
    * Event listener for HTTP server "listening" event.
    */
 
-  function onListening() {
+  function onListening () {
     const addr = server.address()
     const bind = typeof addr === 'string'
       ? `pipe ${addr}`
-      : `port ${addr.port}`
-    debug(`Listening on ${bind}`)
+      : `port ${addr ? addr.port : 'not set'}`
+    info(`Listening on ${bind}`)
   }
 })
-  .catch(err => {
+  .catch((err) => {
     throw err
   })

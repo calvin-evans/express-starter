@@ -1,26 +1,33 @@
-import passport from 'passport'
-import { Strategy as LocalStrat } from 'passport-local'
-import { Strategy as JwtStrat, ExtractJwt } from 'passport-jwt'
-import User from '../models/User'
 import bcrypt from 'bcrypt'
+import passport from 'passport'
+import { ExtractJwt, Strategy as JwtStrat } from 'passport-jwt'
+import { Strategy as LocalStrat } from 'passport-local'
+import User from '../models/User'
 import logger from './logger'
 
 const debug = logger('passport', 'debug')
 const error = logger('passport', 'error')
 
-passport.serializeUser(async(user, done) => {
+export const serializeUser = async (user: any, done?: (err: any, user: any) => string | Promise<string>) => {
+  if (!done) return user
   done(null, user)
-})
+}
 
-passport.deserializeUser(async(id, done) => {
+export const deserializeUser = async (user: any, done?: (err: any, user: any) => any) => {
   try {
-    const user = await User.findById(id).exec()
-    done(null, user)
+    delete user.passsword
+    if (!done) return user.dataValues
+    done(null, user.dataValues)
   } catch (err) {
     error(err)
+    if (!done) return err
     done(err, null)
   }
-})
+}
+
+passport.serializeUser(serializeUser)
+
+passport.deserializeUser(deserializeUser)
 
 passport.use('register', new LocalStrat(
   {
@@ -28,15 +35,14 @@ passport.use('register', new LocalStrat(
     passwordField: 'password',
     session: false
   },
-  async(email, password, done) => {
+  async (email, password, done) => {
     try {
-      const existingUser = await User.findOne({ email }).lean().exec()
+      const existingUser = await User.findOne({ where: { email } })
       if (existingUser !== null) {
         debug('Registration failed: Email already registered')
         return done(null, false, { message: 'Email is already registered, please log in' })
       }
-      const newUser = new User({ email, password })
-      await newUser.save()
+      const newUser = await User.create({ email, password })
       debug(`New user registered`)
       return done(null, newUser)
     } catch (err) {
@@ -51,9 +57,9 @@ passport.use('login', new LocalStrat(
     passwordField: 'password',
     session: false
   },
-  async(email, password, done) => {
+  async (email, password, done) => {
     try {
-      const user = await User.findOne({ email }).lean().exec()
+      const user = await User.findOne({ where: { email } })
       if (!user) {
         debug('Authentication failed: Invalid Email')
         return done(null, false, { message: 'No user exists with that email' })
@@ -71,14 +77,14 @@ passport.use('login', new LocalStrat(
   }
 ))
 
-passport.use('jwt', new JwtStrat(
+const jwtStrat = new JwtStrat(
   {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     secretOrKey: process.env.JWT_SECRET || 'NOT_SECURE'
   },
-  async(jwtPayload, done) => {
+  async (jwtPayload, done) => {
     try {
-      const user = await User.findById(jwtPayload._id)
+      const user = await User.findByPk(jwtPayload.id)
       if (!user) {
         debug('JWT User ID did not match known user')
         return done(null, false)
@@ -89,6 +95,8 @@ passport.use('jwt', new JwtStrat(
       error(err)
     }
   }
-))
+)
+
+export { jwtStrat }
 
 export default passport
