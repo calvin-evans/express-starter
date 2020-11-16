@@ -6,6 +6,7 @@ import { PassportAuthenticator, Server } from 'typescript-rest'
 import fixtures from './fixtures'
 import initAcl from './services/acl'
 import { connect } from './services/db'
+import handleResponse from './services/handleResponse'
 import logger from './services/logger'
 import passport, { deserializeUser, jwtStrat, serializeUser } from './services/passport'
 
@@ -38,18 +39,16 @@ app.use((_req, _res, next) => {
   next(createError(404))
 })
 
+app.use(handleResponse)
+
 async function init () {
   // connect to db
   const connection = await connect()
 
   // load fixtures
   if (process.env.NODE_ENV !== 'production') {
-    try {
-      await Promise.all(fixtures.map((load) => load()))
-      info('Fixtures loaded')
-    } catch (err) {
-      throw err
-    }
+    await Promise.all(fixtures.map((load) => load()))
+    info('Fixtures loaded')
   }
 
   const acl = await initAcl(connection)
