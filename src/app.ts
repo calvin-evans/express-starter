@@ -29,7 +29,7 @@ Server.registerAuthenticator(new PassportAuthenticator(jwtStrat, {
   deserializeUser,
   serializeUser
 }))
-Server.loadServices(app, 'controllers/*', __dirname)
+Server.loadServices(app, 'modules/*/*.controller*', __dirname)
 Server.swagger(app, { filePath: './api-docs/swagger.json' })
 Server.ignoreNextMiddlewares(true)
 

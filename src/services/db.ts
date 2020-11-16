@@ -7,7 +7,7 @@ const debug = logger('database', 'debug')
 const error = logger('database', 'error')
 
 const dbURL = process.env.DB_URL || ''
-const modelsPath = [path.join(__dirname, '../models')]
+const modelsPath = [path.join(__dirname, '../modules/*/*.model.ts')]
 
 export const sequelize = new Sequelize(
   process.env.NODE_ENV === 'production' ? dbURL : 'sqlite::memory:',

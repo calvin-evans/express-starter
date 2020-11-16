@@ -1,7 +1,7 @@
 import Acl from 'acl'
 import AclSeq from 'acl-sequelize'
 import { Sequelize } from 'sequelize-typescript'
-import User from '../models/User'
+import User from '../modules/users/user.model'
 import logger from './logger'
 
 const debug = logger('acl', 'debug')

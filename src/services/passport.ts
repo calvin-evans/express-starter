@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt'
 import passport from 'passport'
 import { ExtractJwt, Strategy as JwtStrat } from 'passport-jwt'
 import { Strategy as LocalStrat } from 'passport-local'
-import User from '../models/User'
+import User from '../modules/users/user.model'
 import logger from './logger'
 
 const debug = logger('passport', 'debug')
