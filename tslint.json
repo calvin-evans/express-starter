@@ -17,6 +17,9 @@
     ],
     "trailing-comma": [
       false
+    ],
+    "no-namespace": [
+      false
     ]
   },
   "rulesDirectory": []
