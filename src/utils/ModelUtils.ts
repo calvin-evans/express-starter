@@ -3,9 +3,10 @@ import { curry, ifElse, omit, pipe, } from 'ramda'
 import { ModelCtor, QueryOptions } from 'sequelize/types'
 import { IGenericDTO } from '../types/data'
 
-/** findOne :: ModelCtor -> QueryOptions -> Task Error Document */
+/** findOne :: ModelCtor -> QueryOptions -> Task any Document */
 export const findOne = curry((model: ModelCtor<any>, query: QueryOptions) =>
-  Task.fromPromise(model.findOne(query)))
+  new Task((reject, resolve) => model.findOne(query).then(ifElse(Boolean, resolve, reject)).catch(reject))
+)
 
 /** exists :: ModelCtor -> id -> Task Bool */
 export const exists = (model: ModelCtor<any>) => ifElse(

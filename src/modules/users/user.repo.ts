@@ -1,6 +1,7 @@
 import { identity, Task } from '@versita/fp-lib'
 import { applySpec, pipe } from 'ramda'
 import { QueryOptions } from 'sequelize/types'
+import { Errors } from 'typescript-rest'
 import IRepo from '../../core/Repo'
 import { Result } from '../../core/Result'
 import { IGenericDTO } from '../../types/data'
@@ -8,9 +9,9 @@ import { exists, findOne, remove, save } from '../../utils/ModelUtils'
 import User from './user.model'
 
 export namespace GetUserError {
-  export class UserNotFoundError extends Result<string> {
+  export class UserNotFoundError extends Result<Errors.BadRequestError> {
     static of (email: string) {
-      return new UserNotFoundError({ success: false, error: `User with email addess: ${email} not found` })
+      return new UserNotFoundError({ success: false, error: new Errors.BadRequestError(`User with email addess: ${email} not found`) })
     }
   }
 }

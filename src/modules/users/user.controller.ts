@@ -27,20 +27,18 @@ export class UserController {
   @Path('me')
   @Security()
   @Response(200, 'The user object')
+  @Response(400, 'Error. Shit')
   @Response(401, 'Error. Unauthorized')
   @Example(exampleUser)
   async getSelf (@Context context: ServiceContext) {
-    try {
-      const response = await UserRepo.getUserById(context.request.user.id)
+    const response = await UserRepo.getUserById(context.request.user.id)
         .fold(
           (_) => GetUserError.UserNotFoundError.of(context.request.user.email),
           (res) => Result.of({ success: true, value: res }),
         )
         .run()
-      return response.value
-    } catch (err) {
-      return err
-    }
+
+    context.next(response)
   }
 
   @GET

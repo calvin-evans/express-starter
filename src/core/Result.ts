@@ -1,3 +1,5 @@
+import {Errors} from 'typescript-rest'
+
 interface IResultSuccess<T> {
   success: true
   value: T
@@ -5,7 +7,7 @@ interface IResultSuccess<T> {
 
 interface IResultError {
   success: false
-  error: string
+  error: Errors.HttpError
 }
 
 export class Result<T> {
@@ -16,7 +18,7 @@ export class Result<T> {
 
   isSuccess: boolean
   isFailure: boolean
-  $error: T | string
+  error: T | Errors.HttpError
   private $value: T
 
   constructor (p: IResultSuccess<T> | IResultError) {
@@ -30,7 +32,7 @@ export class Result<T> {
     this.isSuccess = p.success
     this.isFailure = !p.success
     if ('error' in p) {
-      this.$error = p.error
+      this.error = { ...p.error, message: p.error.message }
     }
     if ('value' in p) {
       this.$value = p.value
@@ -41,7 +43,7 @@ export class Result<T> {
 
   get value (): T {
     if (!this.isSuccess) {
-      return this.$error as T
+      return this.error as T
     }
 
     return this.$value
