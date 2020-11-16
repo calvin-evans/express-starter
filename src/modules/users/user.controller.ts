@@ -26,7 +26,6 @@ export class UserController {
   @Path('me')
   @Security()
   @Response(200, 'The user object')
-  @Response(400, 'Error. Shit')
   @Response(401, 'Error. Unauthorized')
   @Example(exampleUser)
   async getSelf (@Context context: ServiceContext) {
