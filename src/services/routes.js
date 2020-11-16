@@ -1,44 +1,55 @@
 import express from 'express'
-import path from 'path'
 import passport from 'passport'
 import logger from './logger'
+import { forEachObjIndexed, prop, when, pipe, propOr, applySpec, ifElse, flip, toLower, replace, append, concat, forEach } from 'ramda'
 
 const info = logger('routes', 'info')
-const error = logger('routes', 'error')
 
-function createRoutes(routes, prefix, aclMiddleware) {
+// functions
+const authenticatedMiddleware = [passport.authenticate('jwt', { session: false })]
+const getMethod = pipe(
+  propOr('get', 'method'),
+  toLower
+)
+const path = filePath => propOr(concat('/', replace('$', '/', filePath)), 'path')
+const buildMiddleware = ifElse(
+  prop('public'),
+  prop('controller'),
+  pipe(
+    prop('controller'),
+    ifElse(
+      Array.isArray,
+      concat(authenticatedMiddleware),
+      flip(append)(authenticatedMiddleware)
+    )
+  )
+)
+// end fns
+
+export default routes => {
   const router = express.Router()
-  try {
-    for (const key in routes) {
-      if (routes[key]) {
-        const filePath = key.split('$')
-        const fileName = filePath[filePath.length - 1]
-        const fileIsMethod = ['get', 'put', 'post', 'delete'].includes(fileName)
-        if (fileIsMethod && filePath.length > 1) {
-          filePath.pop()
-        }
-        const setRoute = route => {
-          const fallbackMethod = fileIsMethod ? fileName : 'get'
-          const fallbackPath = `/${path.join(...filePath)}`
 
-          const method = route.method || fallbackMethod
-          const routePath = route.path || fallbackPath
-          let callbacks = route.middleware || []
-          if (!route.public) {
-            callbacks.push(passport.authenticate('jwt', { session: false }), aclMiddleware)
+  // functional steps
+  forEachObjIndexed((definitions, filePath) =>
+    forEach(
+      when(prop('controller'),
+        pipe(
+          // normalize the route definition
+          applySpec({
+            handler: buildMiddleware,
+            method: getMethod,
+            path: path(filePath),
+            public: propOr(false, 'public')
+          }),
+          // add it to the router
+          ({ handler, method, path }) => {
+            router[method](path, handler)
+            info(`Creating API endpoint: ${method.toUpperCase()} ${path}`)
           }
-          callbacks = callbacks.concat(route.controller)
+        )
+      )
+      , definitions)
+  , routes)
 
-          router[method](routePath, callbacks)
-          info(`Creating API endpoint: ${method.toUpperCase()} /${prefix}${routePath}`)
-        }
-        routes[key].forEach(setRoute)
-      }
-    }
-  } catch (err) {
-    throw err
-  }
   return router
 }
-
-export default createRoutes
