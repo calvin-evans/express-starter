@@ -1,4 +1,3 @@
-import { Left, Right } from '@versita/fp-lib/either'
 import createError from 'http-errors'
 import jwt from 'jsonwebtoken'
 import passport from 'passport'
