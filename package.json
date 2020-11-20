@@ -15,11 +15,13 @@
     "test": "jest"
   },
   "dependencies": {
-    "@versita/fp-lib": "^1.0.11",
+    "@versita/fp-lib": "^1.0.15",
     "acl": "^0.4.11",
     "acl-sequelize": "^0.3.5",
     "babel-plugin-import": "^1.13.0",
     "bcrypt": "^5.0.0",
+    "class-transformer": "^0.3.1",
+    "class-validator": "^0.12.2",
     "cookie-parser": "~1.4.3",
     "cors": "^2.8.5",
     "debug": "^4.1.1",
@@ -72,7 +74,6 @@
     "faker": "^4.1.0",
     "fs-extra": "^9.0.1",
     "jest": "^26.6.0",
-    "mocha": "^7.1.0",
     "nodemon": "^2.0.6",
     "npm-run-all": "^4.1.5",
     "rimraf": "^3.0.2",

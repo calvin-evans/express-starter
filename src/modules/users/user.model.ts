@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt'
 import { BeforeCreate, Column, CreatedAt, Default, Model, PrimaryKey, Table, UpdatedAt } from 'sequelize-typescript'
+import { IsEmail } from 'class-validator'
 import { v4 as uuidv4 } from 'uuid'
 import logger from '../../services/logger'
 
@@ -30,6 +31,7 @@ class User extends Model<User> {
   lastName: string
 
   @Column
+  @IsEmail()
   email: string
 
   @Column

@@ -1,12 +1,15 @@
+import {validateOrReject, ValidationError} from 'class-validator'
 import createError from 'http-errors'
 import jwt from 'jsonwebtoken'
 import passport from 'passport'
 import { Context, GET, Path, POST, PreProcessor, Security, ServiceContext } from 'typescript-rest'
+import { __, map, is, prop, omit, ifElse, both } from 'ramda'
 import { Example, Response } from 'typescript-rest-swagger'
-import { Result } from '../../core/Result'
+import { GeneralError, Result } from '../../core/Result'
 import logger from '../../services/logger'
 import User from './user.model'
-import UserRepo, { GetUserError } from './user.repo'
+import UserRepo, { GetUserError, InsertUserError } from './user.repo'
+import {Task, chain, pipe, fold} from '@versita/fp-lib'
 
 const error = logger('controllers:user', 'error')
 
@@ -48,15 +51,30 @@ export class UserController {
 
   @POST
   @Security()
-  async insertUser (user: any): Promise<boolean | createError.HttpError> {
-    try {
-      await User.create(user)
-      return true
-    } catch (err) {
-      error(err)
-
-      throw createError(400, err.message)
-    }
+  async insertUser(user: any, @Context context: ServiceContext) {
+    const newUser = User.build(user)
+    const response = await pipe(
+      validateOrReject,
+      Task.fromPromise,
+      chain(() => Task.fromPromise(newUser.save())),
+      fold(
+       ifElse (
+         both(is(Array), val => val[0] instanceof ValidationError),
+         InsertUserError.InvalidUserData.of,
+         GeneralError.of
+       ),
+       pipe(
+         prop('dataValues'),
+         omit(['password']),
+         (value: Partial<User>) => ({
+           success: true,
+           value
+         }),
+         Result.of
+       )
+      )
+    )(newUser).run()
+    context.next(response)
   }
 }
 
