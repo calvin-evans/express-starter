@@ -25,6 +25,7 @@ const app = express()
 app
   .use(morgan('combined', { stream: { write: (msg: string) => httpLog(msg) } }))
   .use(helmet())
+  .use(express.json())
   .use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerJSON))
   .use(express.urlencoded({ extended: false }))
   .use(cors())
