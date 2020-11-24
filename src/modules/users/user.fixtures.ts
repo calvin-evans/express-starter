@@ -1,18 +1,18 @@
 import bcrypt from 'bcrypt'
-import logger from '../../services/logger'
+import logger from '../../shared/logger'
 import User from './user.model'
 
 const debug = logger('fixtures', 'debug')
 const error = logger('fixtures', 'error')
 
-export default async () => {
+export const devFixtures = async () => {
   try {
     debug('loading User fixtures')
     const data = [
       {
+        email: 'ceuk.dev@gmail.com',
         firstName: 'Betty',
         lastName: 'TheAdmin',
-        email: 'ceuk.dev@gmail.com',
         password: 'abcd1234',
         role: 'admin'
       }
@@ -22,9 +22,9 @@ export default async () => {
       doc.password = hashedPassword
       return doc
     }))
-    await User.destroy({ where: {}, truncate: true })
+    await User.destroy({ truncate: true, where: {} })
     return User.bulkCreate(docs)
-  } catch (err) {
-    error(err)
+  } catch (error_) {
+    error(error_)
   }
 }

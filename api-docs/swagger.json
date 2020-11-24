@@ -1,134 +1,255 @@
 {
-	"openapi": "3.0.0",
-	"info": {
-		"description": "Example API",
-		"license": {
-			"name": "MIT"
-		},
-		"title": "Express Starter",
-		"version": "0.0.1"
-	},
-	"paths": {
-		"/auth/login": {
-			"post": {
-				"operationId": "AuthLoginSuccessful",
-				"responses": {
-					"204": {
-						"description": "No content"
-					}
-				},
-				"description": ""
-			}
-		},
-		"/auth/register": {
-			"post": {
-				"operationId": "AuthRegistrationSuccessful",
-				"responses": {
-					"204": {
-						"description": "No content"
-					}
-				},
-				"description": "",
-				"security": [
-					{
-						"default": []
-					}
-				]
-			}
-		},
-		"/user/me": {
-			"get": {
-				"operationId": "UserGetSelf",
-				"responses": {
-					"200": {
-						"description": "The user object",
-						"content": {
-							"application/json": {
-								"examples": {
-									"response": {
-										"value": {
-											"id": "123456-123456-123456-123456",
-											"firstName": "Frank",
-											"lastName": "Sinatra",
-											"email": "frank@sinatra.com",
-											"createdAt": "2020-10-21T09:01:20.040Z",
-											"updatedAt": "2020-10-21T09:01:20.040Z"
-										}
-									}
-								}
-							}
-						}
-					},
-					"401": {
-						"description": "Error. Unauthorized"
-					}
-				},
-				"description": "",
-				"security": [
-					{
-						"default": []
-					}
-				]
-			}
-		},
-		"/user/validateToken": {
-			"get": {
-				"operationId": "UserValidateToken",
-				"responses": {
-					"204": {
-						"description": "No content"
-					}
-				},
-				"description": "",
-				"security": [
-					{
-						"default": []
-					}
-				]
-			}
-		},
-		"/user": {
-			"post": {
-				"operationId": "UserInsertUser",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object"
-								}
-							}
-						}
-					}
-				},
-				"description": "",
-				"security": [
-					{
-						"default": []
-					}
-				],
-				"requestBody": {
-					"content": {
-						"application/json": {
-							"schema": {
-								"type": "object"
-							}
-						}
-					},
-					"required": true
-				}
-			}
-		}
-	},
-	"components": {
-		"securitySchemes": {
-			"default": {
-				"type": "http",
-				"scheme": "bearer",
-				"bearerFormat": "JWT",
-				"name": "JWT Authentication"
-			}
-		}
-	}
+  "openapi": "3.0.0",
+  "info": {
+    "description": "Example API",
+    "license": {
+      "name": "MIT"
+    },
+    "title": "Express Starter",
+    "version": "0.0.1"
+  },
+  "components": {
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "example": {
+          "statusCode": 500,
+          "isSuccess": false,
+          "isFailure": true,
+          "error": "Something weng wrong"
+        },
+        "properties": {
+          "statusCode": {
+            "type": "integer",
+            "minimum": 100,
+            "maximum": 600
+          },
+          "isSuccess": {
+            "type": "boolean"
+          },
+          "isFailure": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "string"
+          }
+        }
+      },
+      "SuccessResponse": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "integer",
+            "minimum": 100,
+            "maximum": 600,
+            "example": 200
+          },
+          "isSuccess": {
+            "type": "boolean",
+            "example": true
+          },
+          "isFailure": {
+            "type": "boolean",
+            "example": false
+          },
+          "value": {}
+        }
+      },
+      "User": {
+        "title": "User",
+        "type": "object",
+        "example": {
+          "firstName": "Bob",
+          "lastName": "Bobson",
+          "email": "bob@bobson.com",
+          "createdAt": "2020-11-23",
+          "updatedAt": "2020-11-23"
+        },
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "firstName": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastName": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          },
+          "role": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    "securitySchemes": {
+      "default": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "name": "JWT Authentication"
+      }
+    }
+  },
+  "paths": {
+    "/user": {
+      "post": {
+        "operationId": "CreateUser",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unsuccessful Response"
+          }
+        },
+        "security": [
+          {
+            "default": []
+          }
+        ]
+      }
+    },
+    "/user/me": {
+      "get": {
+        "operationId": "GetSelf",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/SuccessResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "value": {
+                          "$ref": "#/components/schemas/User"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unsuccessful Response"
+          }
+        },
+        "security": [
+          {
+            "default": []
+          }
+        ]
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "Login",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unsuccessful Response"
+          }
+        }
+      }
+    },
+    "/user/validateToken": {
+      "get": {
+        "operationId": "ValidateToken",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unsuccessful Response"
+          }
+        },
+        "security": [
+          {
+            "default": []
+          }
+        ]
+      }
+    }
+  }
 }

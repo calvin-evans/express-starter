@@ -1,26 +1,29 @@
-import {join, pipe, map, prop, values, flatten} from 'ramda'
-import {ValidationError} from 'sequelize/types'
-import {Errors} from 'typescript-rest'
+/* eslint-disable immutable/no-this */
+import { join, pipe, map, prop, values, flatten } from 'ramda'
+import { ValidationError } from 'sequelize/types'
+import { Errors } from 'typescript-rest'
 
 interface IResultSuccess<T> {
   success: true
-  value: T
+  value: T,
+  statusCode?: number
 }
 
 interface IResultError {
   success: false
-  error: Errors.HttpError
+  error: Error,
+  statusCode?: number
 }
 
 export class Result<T> {
-
   static of (p: any): Result<any> {
     return new Result(p)
   }
 
   isSuccess: boolean
   isFailure: boolean
-  error: T | Errors.HttpError
+  statusCode: number
+  error: Error
   private value: T
 
   constructor (p: IResultSuccess<T> | IResultError) {
@@ -35,17 +38,19 @@ export class Result<T> {
     this.isFailure = !p.success
     if ('error' in p) {
       this.error = { ...p.error, message: p.error.message }
+      this.statusCode = p.statusCode || 500
     }
     if ('value' in p) {
       this.value = p.value
+      this.statusCode = p.statusCode || 200
     }
 
     Object.freeze(this)
   }
 
-  get $value (): T {
+  get $value (): T | Error {
     if (!this.isSuccess) {
-      return this.error as T
+      return this.error
     }
 
     return this.value
@@ -64,8 +69,9 @@ export class InvalidData extends Result<Errors.UnprocessableEntityError> {
       join(', ')
     )
     return new InvalidData({
-      success: false,
-      error: new Errors.UnprocessableEntityError(mapErrors(errors))
+      error: new Errors.UnprocessableEntityError(mapErrors(errors)),
+      statusCode: 400,
+      success: false
     })
   }
 }
@@ -73,8 +79,8 @@ export class InvalidData extends Result<Errors.UnprocessableEntityError> {
 export class GeneralError extends Result<Error | any> {
   static of (error: Error | any) {
     return new GeneralError({
-      success: false,
-      error
+      error,
+      success: false
     })
   }
 }

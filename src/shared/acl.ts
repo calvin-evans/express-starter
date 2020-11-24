@@ -11,16 +11,16 @@ export default async (connection: Sequelize) => {
   const acl = new Acl(new AclSeq(connection, { prefix: 'acl_' }))
   acl.allow([
     {
-      roles: ['user', 'admin'],
       allows: [
-        { resources: ['/auth'], permissions: ['*'] }
-      ]
+        { permissions: ['*'], resources: ['/auth'] }
+      ],
+      roles: ['user', 'admin']
     },
     {
-      roles: ['admin'],
       allows: [
-        { resources: ['/user', '/roles'], permissions: '*' }
-      ]
+        { permissions: '*', resources: ['/user', '/roles'] }
+      ],
+      roles: ['admin']
     }
   ])
   // when not in prod assign roles based on 'role' prop on user docs
@@ -31,8 +31,8 @@ export default async (connection: Sequelize) => {
         debug(`Assigning ${user.role} role to ${user.firstName} ${user.lastName} - ID: ${user.id}`)
         return acl.addUserRoles(user.id, user.role || 'user')
       }))
-    } catch (err) {
-      throw err
+    } catch (error) {
+      throw error
     }
   }
 

@@ -1,4 +1,4 @@
-import logger from './services/logger'
+import logger from './shared/logger'
 import env from 'node-env-file'
 const info = logger('config', 'info')
 
@@ -8,6 +8,6 @@ if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
 
 try {
   env(`${__dirname}/../.env`)
-} catch (err) {
+} catch {
   info('no .env file found')
 }

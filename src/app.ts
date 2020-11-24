@@ -1,63 +1,38 @@
 import cors from 'cors'
+import helmet from 'helmet'
 import express from 'express'
 import createError from 'http-errors'
 import morgan from 'morgan'
-import { PassportAuthenticator, Server } from 'typescript-rest'
-import fixtures from './fixtures'
-import initAcl from './services/acl'
-import { connect } from './services/db'
-import handleResponse from './services/handleResponse'
-import logger from './services/logger'
-import passport, { deserializeUser, jwtStrat, serializeUser } from './services/passport'
+import requireGlob from 'require-glob'
+import passport from './shared/passport'
+import logger from './shared/logger'
+import handleResponse from './shared/handleResponse'
+import swaggerUI from 'swagger-ui-express'
+import swaggerJSON from '../api-docs/swagger.json'
+import createRouter from './shared/createRouter'
+import { append } from 'ramda'
 
-const info = logger('main', 'info')
+const routeDefinitions = requireGlob.sync('./modules/**/*.routes*', {
+  reducer: (_opts: any, list: any, file: any) => append(file, list || [])
+}).map(({ exports }) => exports.default)
+
+const router = createRouter(routeDefinitions)
+
 const httpLog = logger('http', 'debug')
 
 const app = express()
 
 app
   .use(morgan('combined', { stream: { write: (msg: string) => httpLog(msg) } }))
-  .use('/api-docs/swagger', express.static('swagger'))
-  .use('/api-docs/swagger/assets', express.static('node_modules/swagger-ui-dist'))
-  .use(express.json())
+  .use(helmet())
+  .use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerJSON))
   .use(express.urlencoded({ extended: false }))
   .use(cors())
   .use(passport.initialize())
+  .use(router)
+  .use(handleResponse)
+  .use((_req, _res, next) => {
+    next(createError(404))
+  })
 
-app.post('/auth/login', passport.authenticate('login'))
-
-Server.registerAuthenticator(new PassportAuthenticator(jwtStrat, {
-  deserializeUser,
-  serializeUser
-}))
-Server.loadServices(app, 'modules/*/*.controller*', __dirname)
-Server.swagger(app, { filePath: './api-docs/swagger.json' })
-Server.ignoreNextMiddlewares(true)
-
-// catch 404 and forward to error handler
-app.use((_req, _res, next) => {
-  next(createError(404))
-})
-
-app.use(handleResponse)
-
-async function init () {
-  // connect to db
-  const connection = await connect()
-
-  // load fixtures
-  if (process.env.NODE_ENV !== 'production') {
-    await Promise.all(fixtures.map((load) => load()))
-    info('Fixtures loaded')
-  }
-
-  const acl = await initAcl(connection)
-  info('ACL established')
-
-  const getUserFromReq = ({ user }: any) => user && user.id
-  app.use(acl.middleware(2, getUserFromReq))
-
-  return app
-}
-
-export { init, app }
+export default app

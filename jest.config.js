@@ -1,4 +1,8 @@
 module.exports = {
   preset: 'ts-jest',
-  testEnvironment: 'node',
-};
+  setupFilesAfterEnv: [
+    './node_modules/riteway-jest/src/riteway-jest.js'
+  ],
+  testEnvironment: 'node'
+}
+

@@ -1,21 +1,20 @@
 import bcrypt from 'bcrypt'
 import { BeforeCreate, Column, CreatedAt, Default, Model, PrimaryKey, Table, UpdatedAt } from 'sequelize-typescript'
-import { IsEmail } from 'class-validator'
+import { IsEmail, IsString } from 'class-validator'
 import { v4 as uuidv4 } from 'uuid'
-import logger from '../../services/logger'
+import logger from '../../shared/logger'
 
 const error = logger('models:user', 'error')
 
 @Table
 class User extends Model<User> {
-
   @BeforeCreate
   static async hashPassword (user: User) {
     try {
       const hashedPassword = await bcrypt.hash(user.password, 10)
       user.password = hashedPassword
-    } catch (err) {
-      error(err)
+    } catch (error_) {
+      error(error_)
     }
   }
 
@@ -25,9 +24,11 @@ class User extends Model<User> {
   id: string
 
   @Column
+  @IsString()
   firstName: string
 
   @Column
+  @IsString()
   lastName: string
 
   @Column
@@ -35,6 +36,7 @@ class User extends Model<User> {
   email: string
 
   @Column
+  @IsString()
   password: string
 
   @Column

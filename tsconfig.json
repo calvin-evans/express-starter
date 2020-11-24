@@ -5,6 +5,7 @@
       "./node_modules/@types",
       "./src/types"
     ],
+    "resolveJsonModule": true,
     "declaration": false,
     "strictPropertyInitialization": false,
     "module": "commonjs",

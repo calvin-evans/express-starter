@@ -24,8 +24,8 @@ export const connect = async () => {
     await sequelize.sync()
     info('Connection to database established')
     return sequelize
-  } catch (err) {
-    error('Unable to connect to database:', err)
-    throw err
+  } catch (error_) {
+    error('Unable to connect to database:', error_)
+    throw error_
   }
 }

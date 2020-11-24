@@ -1,7 +1,7 @@
 swagger:
   outputDirectory: ./api-docs
   entryFile:
-    - ./src/controllers/*
+    - ./src/modules/*/*.controller*
   outputFormat: OpenApi_3
   name: Express Starter
   description: Example API

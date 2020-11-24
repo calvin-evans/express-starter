@@ -1,0 +1,71 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "Example API",
+    "license": {
+      "name": "MIT"
+    },
+    "title": "Express Starter",
+    "version": "0.0.1"
+  },
+  "components": {
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "example": {
+          "statusCode": 500,
+          "isSuccess": false,
+          "isFailure": true,
+          "error": "Something weng wrong"
+        },
+        "properties": {
+          "statusCode": {
+            "type": "integer",
+            "minimum": 100,
+            "maximum": 600
+          },
+          "isSuccess": {
+            "type": "boolean"
+          },
+          "isFailure": {
+            "type": "boolean"
+          },
+          "error": {
+            "type": "string"
+          }
+        }
+      },
+      "SuccessResponse": {
+        "type": "object",
+        "example": {
+          "statusCode": 200,
+          "isSuccess": true,
+          "isFailure": false,
+          "value": "some data"
+        },
+        "properties": {
+          "statusCode": {
+            "type": "integer",
+            "minimum": 100,
+            "maximum": 600
+          },
+          "isSuccess": {
+            "type": "boolean"
+          },
+          "isFailure": {
+            "type": "boolean"
+          },
+          "value": {}
+        }
+      }
+    },
+    "securitySchemes": {
+      "default": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "name": "JWT Authentication"
+      }
+    }
+  }
+}
